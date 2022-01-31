@@ -1,5 +1,6 @@
 import abc
 import requests
+import asyncio
 
 
 class DownloaderInterface:
@@ -9,11 +10,11 @@ class DownloaderInterface:
         self.path = "./pictures"
 
     @abc.abstractmethod
-    def get_image(self):
+    async def get_image(self):
         """Download obj"""
 
     @abc.abstractmethod
-    def get_images_collection(self, count: int):
+    async def get_images_collection(self, count: int):
         """Get images collection"""
 
 
@@ -29,19 +30,21 @@ class LoremParser(DownloaderInterface, abc.ABC):
         """The link consists of the name of the site and the resolution of the random picture you want to see."""
         return str(self.url + ''.join(resolution))
 
-    def get_image(self, name: str = "name"):
+    async def get_image(self, name: str = "name"):
         image = self.get_url()
         r = requests.get(image)
         with open(f"{self.path}/{name}.jpg", "wb") as file:
             file.write(r.content)
 
-    def get_images_collection(self, count: int):
+    async def get_images_collection(self, count: int):
         while self.counter <= count:
-            self.get_image(str(self.counter))
+            print(1)
+            asyncio.create_task(self.get_image(str(self.counter)))
+            print(2)
             self.counter += 1
 
 
 if __name__ == "__main__":
     lp = LoremParser()
-    lp.get_image()
+    asyncio.run(lp.get_images_collection(10))
     print("Need to execute from 'main.py'")
