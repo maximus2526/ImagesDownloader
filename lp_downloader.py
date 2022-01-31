@@ -1,24 +1,44 @@
-from abc import ABC
+import abc
 import requests
-from interface import DownloaderInterface
 
 
-class LoremParser(DownloaderInterface, ABC):
+class DownloaderInterface:
+    __metaclass__ = abc.ABCMeta
+
+    def __init__(self):
+        self.path = "./pictures"
+
+    @abc.abstractmethod
+    def get_image(self):
+        """Download obj"""
+
+    @abc.abstractmethod
+    def get_images_collection(self, count: int):
+        """Get images collection"""
+
+
+class LoremParser(DownloaderInterface, abc.ABC):
     url: str = 'https://loremflickr.com/'
 
-    def get_path(self, path: str = "./pictures"):
-        return path
+    def __init__(self):
+        super().__init__()
+        self.counter = 1
+        self.path = self.path
 
-    def get_url(self, resolution="1080/720"):
+    def get_url(self, resolution: str = "1080/720") -> str:
         """The link consists of the name of the site and the resolution of the random picture you want to see."""
         return str(self.url + ''.join(resolution))
 
     def get_image(self, name: str = "name"):
         image = self.get_url()
-        path = self.get_path()
         r = requests.get(image)
-        with open(f"{path}/{name}.jpg", "wb") as file:
+        with open(f"{self.path}/{name}.jpg", "wb") as file:
             file.write(r.content)
+
+    def get_images_collection(self, count: int):
+        while self.counter <= count:
+            self.get_image(str(self.counter))
+            self.counter += 1
 
 
 if __name__ == "__main__":
