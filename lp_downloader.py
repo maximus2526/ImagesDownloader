@@ -1,9 +1,5 @@
 from abc import ABC
-from os import mkdir
-
 import requests
-from typing import Tuple
-
 from interface import DownloaderInterface
 
 
@@ -13,9 +9,9 @@ class LoremParser(DownloaderInterface, ABC):
     def get_path(self, path: str = "./pictures"):
         return path
 
-    def get_url(self, resolution: Tuple[str] = ("1080", "720")):
+    def get_url(self, resolution="1080/720"):
         """The link consists of the name of the site and the resolution of the random picture you want to see."""
-        return str(self.url + '/'.join(resolution))
+        return str(self.url + ''.join(resolution))
 
     def get_image(self, name: str = "name"):
         image = self.get_url()
@@ -26,4 +22,6 @@ class LoremParser(DownloaderInterface, ABC):
 
 
 if __name__ == "__main__":
-    print("Need to execute 'main.py'")
+    lp = LoremParser()
+    lp.get_image()
+    print("Need to execute from 'main.py'")
