@@ -1,7 +1,7 @@
 import abc
 import asyncio
 from time import time
-import requests
+import aiohttp
 
 
 class DownloaderInterface:
@@ -15,7 +15,7 @@ class DownloaderInterface:
         """Download obj"""
 
     @abc.abstractmethod
-    async def get_images_collection(self, count: int):
+    async def get_images_collection(self):
         """Get images collection"""
 
 
@@ -44,21 +44,23 @@ class LoremParser(DownloaderInterface, abc.ABC):
 
     async def get_image(self, name: str = "name"):
         image = self.get_url()
-        r = requests.get(image, allow_redirects=True)
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url=image, allow_redirects=True) as response:
+                content = await response.read()
         with open(f"{self.path}/{name}.jpg", "wb") as file:
-            file.write(r.content)
+            file.write(content)
 
-    async def get_images_collection(self, count: int):
-        while self.counter <= count:
-            print(1)
-            asyncio.create_task(self.get_image(str(self.counter)))
-            print(2)
-            self.counter += 1
+    async def get_images_collection(self, count: int = 1):
+        tasks = []
+        for i in range(count):
+            task = asyncio.create_task(self.get_image(name=str(i)))
+            tasks.append(task)
+        await asyncio.gather(*tasks)
 
 
 if __name__ == "__main__":
     time_start = time()
     lp = LoremParser()
-    asyncio.run(lp.get_images_collection(10))
-    print("Time execution: {} sec".format(str(round(time()-time_start, 3))))
+    asyncio.run(lp.get_images_collection())
+    print("Time execution: {} sec".format(str(round(time() - time_start, 3))))
     print("Need to execute from 'main.py'")
