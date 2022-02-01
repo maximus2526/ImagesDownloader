@@ -1,5 +1,6 @@
 from os import mkdir
 from lp_downloader import LoremParser
+import asyncio
 
 parser = LoremParser()  # Create instance
 
@@ -17,6 +18,6 @@ if choice_path == ("Y" or "y" or "Yes" or "Да"):
     mkdir(path)
     parser.path = path
 
-parser.get_images_collection(int(have_many))
+asyncio.run(parser.get_images_collection(int(have_many)))
 
 print("Done.")

@@ -1,6 +1,7 @@
 import abc
-import requests
 import asyncio
+from time import time
+import requests
 
 
 class DownloaderInterface:
@@ -18,6 +19,17 @@ class DownloaderInterface:
         """Get images collection"""
 
 
+# def check_time():  # Почему я не могу юзать это на методах класа?
+#     def wrapper():
+#         time_now = time()
+#         func()
+#         time_past = time()
+#         time_past -= time_now
+#         print(time_past)
+#
+#     return wrapper
+
+
 class LoremParser(DownloaderInterface, abc.ABC):
     url: str = 'https://loremflickr.com/'
 
@@ -32,7 +44,7 @@ class LoremParser(DownloaderInterface, abc.ABC):
 
     async def get_image(self, name: str = "name"):
         image = self.get_url()
-        r = requests.get(image)
+        r = requests.get(image, allow_redirects=True)
         with open(f"{self.path}/{name}.jpg", "wb") as file:
             file.write(r.content)
 
@@ -45,6 +57,8 @@ class LoremParser(DownloaderInterface, abc.ABC):
 
 
 if __name__ == "__main__":
+    time_start = time()
     lp = LoremParser()
     asyncio.run(lp.get_images_collection(10))
+    print("Time execution: {} sec".format(str(round(time()-time_start, 3))))
     print("Need to execute from 'main.py'")
