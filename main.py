@@ -11,7 +11,7 @@ choice_resolution = input("Hi! Images standard resolution = 1080/720. You want t
 
 if choice_resolution == ("Y" or "y" or "Yes" or "Да"):
     resolution = input("Input resolution of images like that '720/480':\n")
-    parser.get_url(resolution)
+    parser.resolution = resolution
 
 choice_path = input("Change path:  (Y/N)\n")
 if choice_path == ("Y" or "y" or "Yes" or "Да"):

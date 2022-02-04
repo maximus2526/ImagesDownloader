@@ -19,17 +19,6 @@ class DownloaderInterface:
         """Get images collection"""
 
 
-# def check_time():  # Почему я не могу юзать это на методах класа?
-#     def wrapper():
-#         time_now = time()
-#         func()
-#         time_past = time()
-#         time_past -= time_now
-#         print(time_past)
-#
-#     return wrapper
-
-
 class LoremParser(DownloaderInterface, abc.ABC):
     url: str = 'https://loremflickr.com/'
 
@@ -37,13 +26,14 @@ class LoremParser(DownloaderInterface, abc.ABC):
         super().__init__()
         self.counter = 1
         self.path = self.path
+        self.resolution = "1080/720"
 
-    def get_url(self, resolution: str = "1080/720") -> str:
+    def _parse_url(self) -> str:
         """The link consists of the name of the site and the resolution of the random picture you want to see."""
-        return str(self.url + ''.join(resolution))
+        return str(self.url + ''.join(self.resolution))
 
     async def get_image(self, name: str = "name"):
-        image = self.get_url()
+        image = self._parse_url()
         async with aiohttp.ClientSession() as session:
             async with session.get(url=image, allow_redirects=True) as response:
                 content = await response.read()
@@ -59,8 +49,6 @@ class LoremParser(DownloaderInterface, abc.ABC):
 
 
 if __name__ == "__main__":
-    time_start = time()
     lp = LoremParser()
     asyncio.run(lp.get_images_collection())
-    print("Time execution: {} sec".format(str(round(time() - time_start, 3))))
     print("Need to execute from 'main.py'")
